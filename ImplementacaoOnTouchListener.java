@@ -1,9 +1,12 @@
 package com.example.cvtest;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
+import android.widget.Button;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -37,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     Mat img1,submat;
     String coordTexto = "";
     List<Point> coordLinhas = new ArrayList<Point>();
+
 
     /*Definindo o comportamento ao toque*/
     View.OnTouchListener handleTouch = new View.OnTouchListener(){
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     void imprimirLinha(Point ponto_inicial,Point ponto_final, Mat imagem){
         Imgproc.line(imagem,ponto_inicial,ponto_final,new Scalar(255,255,0));
     }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +91,25 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         cameraBridgeViewBase.setCvCameraViewListener(this);
         /*Habilitando a obseravação de toques na superficie da câmera*/
         cameraBridgeViewBase.setOnTouchListener(handleTouch);
+
+        /*botôes para confirmar as linhas*/
+        final Button Bt_confirm_coord = (Button) findViewById(R.id.Confirm_coord);
+        final Button Bt_remove_coord = (Button) findViewById(R.id.remove_coord);
+
+        Bt_confirm_coord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bt_confirm_coord.setVisibility(View.INVISIBLE);
+                Bt_remove_coord.setVisibility(View.INVISIBLE);
+            }
+        });
+        Bt_remove_coord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                coordLinhas.clear();
+            }
+        });
+        /*fim funções bototes*/
 
         if(OpenCVLoader.initDebug()){
             Toast.makeText(getApplicationContext(),"Deu certo!!!",Toast.LENGTH_SHORT).show();
@@ -124,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         if(!coordLinhas.isEmpty()){
             for (nPontos=0;nPontos<coordLinhas.size();nPontos++){
                 Imgproc.circle(img1,coordLinhas.get(nPontos),1, new Scalar(255,152,22));
+
+            }
+            if(coordLinhas.size()%2==0){
+                imprimirLinha(coordLinhas.get(nPontos-1),coordLinhas.get(nPontos-2),img1);
             }
 
         }
