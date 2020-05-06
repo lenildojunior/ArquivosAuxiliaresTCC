@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     BaseLoaderCallback baseLoaderCallback;
     Mat img1,submat;
     String coordTexto = "";
+    Point finalLinha = new Point();
+    boolean flag_ok_linhas = false;
     List<Point> coordLinhas = new ArrayList<Point>();
 
 
@@ -51,13 +53,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             int y = (int) event.getY();
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    coordTexto = "Toque detectado";
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    coordTexto = "x:" + x + "y:" + y + "";
+                    finalLinha.x = x;
+                    finalLinha.y = y - 180;
+
                     break;
                 case MotionEvent.ACTION_UP:
-                    coordTexto = "";
                     coordLinhas.add(new Point(x,y - 180)); /*Ajuste da coordeanda vertical, de forma a ficar na janela da imagem*/
                     break;
             }
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             public void onClick(View view) {
                 Bt_confirm_coord.setVisibility(View.INVISIBLE);
                 Bt_remove_coord.setVisibility(View.INVISIBLE);
+                flag_ok_linhas = true;
             }
         });
         Bt_remove_coord.setOnClickListener(new View.OnClickListener() {
@@ -148,16 +151,25 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         int nPontos;
         Core.flip(img1.t(),img1,1);
         if(!coordLinhas.isEmpty()){
-            for (nPontos=0;nPontos<coordLinhas.size();nPontos++){
-                Imgproc.circle(img1,coordLinhas.get(nPontos),1, new Scalar(255,152,22));
-
+            if(!flag_ok_linhas){
+                for (nPontos=0;nPontos<coordLinhas.size();nPontos++) {
+                    Imgproc.circle(img1, coordLinhas.get(nPontos), 1, new Scalar(255, 152, 22));
+                }
+                if (coordLinhas.size() % 2 == 0) {
+                    imprimirLinha(coordLinhas.get(nPontos - 1), coordLinhas.get(nPontos - 2), img1);
+                } else {
+                    imprimirLinha(coordLinhas.get(nPontos - 1), finalLinha, img1);
+                }
             }
-            if(coordLinhas.size()%2==0){
-                imprimirLinha(coordLinhas.get(nPontos-1),coordLinhas.get(nPontos-2),img1);
+            else{
+                for(int i=0;i<coordLinhas.size();i++){
+                    
+                }
             }
 
         }
-        Imgproc.putText(img1,coordTexto,new Point(100,100),Core.FONT_ITALIC,2.0,new Scalar(255,255,0));
+        //Imgproc.putText(img1,coordTexto,new Point(100,100),Core.FONT_ITALIC,2.0,new Scalar(255,255,0));
+
         return img1;
     }
 
