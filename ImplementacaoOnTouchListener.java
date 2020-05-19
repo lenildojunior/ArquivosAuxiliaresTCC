@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -74,6 +75,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         Imgproc.line(imagem,ponto_inicial,ponto_final,new Scalar(255,255,0));
     }
 
+    /*void retornar(){
+        Button bt_definit_linha = (Button) findViewById(R.id.definirLinhas);
+        bt_definit_linha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +109,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         final Button Bt_confirm_coord = (Button) findViewById(R.id.Confirm_coord);
         final Button Bt_remove_coord = (Button) findViewById(R.id.remove_coord);
 
+
+
+
         Bt_confirm_coord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bt_confirm_coord.setVisibility(View.INVISIBLE);
                 Bt_remove_coord.setVisibility(View.INVISIBLE);
                 flag_ok_linhas = true;
+                finish();
             }
         });
         Bt_remove_coord.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         else{
             Toast.makeText(getApplicationContext(),"Deu errado!!!",Toast.LENGTH_SHORT).show();
         }
+
+        Bundle bundle = getIntent().getExtras();
+        String value = bundle.getString("teste");
+        Toast.makeText(getApplicationContext(),value,Toast.LENGTH_SHORT).show();
+       // retornar();
 
         baseLoaderCallback = new BaseLoaderCallback(this) {
             @Override
@@ -163,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
             else{
                 for(int i=0;i<coordLinhas.size();i++){
-                    
+
                 }
             }
 
