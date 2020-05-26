@@ -33,6 +33,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleToIntFunction;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
@@ -61,7 +62,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                     break;
                 case MotionEvent.ACTION_UP:
-                    coordLinhas.add(new Point(x,y - 180)); /*Ajuste da coordeanda vertical, de forma a ficar na janela da imagem*/
+                    if(!flag_ok_linhas) {
+                        coordLinhas.add(new Point(x, y - 180)); /*Ajuste da coordeanda vertical, de forma a ficar na janela da imagem*/
+                    }
                     break;
             }
             return true;
@@ -74,16 +77,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     void imprimirLinha(Point ponto_inicial,Point ponto_final, Mat imagem){
         Imgproc.line(imagem,ponto_inicial,ponto_final,new Scalar(255,255,0));
     }
-
-    /*void retornar(){
-        Button bt_definit_linha = (Button) findViewById(R.id.definirLinhas);
-        bt_definit_linha.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-    }*/
 
 
     @Override
@@ -118,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Bt_confirm_coord.setVisibility(View.INVISIBLE);
                 Bt_remove_coord.setVisibility(View.INVISIBLE);
                 flag_ok_linhas = true;
-                finish();
+                /*finish();*/
             }
         });
         Bt_remove_coord.setOnClickListener(new View.OnClickListener() {
@@ -182,8 +175,17 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }
             }
             else{
-                for(int i=0;i<coordLinhas.size();i++){
+                for(int k=0;k<coordLinhas.size();k=k+2){
+                   /* nRows = Math.abs((int)coordLinhas.get(k+1).y - (int)coordLinhas.get(k).y);*/
+                    /*Point points[] = new Point[nRows*3];*/
+                    for(int i=(int)coordLinhas.get(k).y; i<(int)coordLinhas.get(k+1).y; i=i+20){
+                        //for(int j=0; j<nCols; j++){
+                        for(int j=(int)coordLinhas.get(k).x; j<(int)coordLinhas.get(k).x+30; j=j+10){
+                            Imgproc.circle(img1,new Point(j,i),2,new Scalar(255,255,255));
+                            /*points[i*3+j]=new Point(j*colStep, i*rowStep);*/
 
+                        }
+                    }
                 }
             }
 
