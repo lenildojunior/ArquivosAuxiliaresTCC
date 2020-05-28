@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     String coordTexto = "";
     Point finalLinha = new Point();
     boolean flag_ok_linhas = false;
+    Bundle b = new Bundle(); /*"Pacote por onde serão enviadas as coordenadas das linhas para outra activity"*/
     List<Point> coordLinhas = new ArrayList<Point>();
 
 
@@ -111,13 +112,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Bt_confirm_coord.setVisibility(View.INVISIBLE);
                 Bt_remove_coord.setVisibility(View.INVISIBLE);
                 flag_ok_linhas = true;
-                /*finish();*/
+                Intent inte = new Intent(MainActivity.this,MenuOpcoes.class);
+                inte.putExtra("coordPontos",b); /*Passando o pacote*/
+                startActivity(inte);
             }
         });
         Bt_remove_coord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 coordLinhas.clear();
+                b.clear();
             }
         });
         /*fim funções bototes*/
@@ -129,10 +133,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             Toast.makeText(getApplicationContext(),"Deu errado!!!",Toast.LENGTH_SHORT).show();
         }
 
-        Bundle bundle = getIntent().getExtras();
+       /* Bundle bundle = getIntent().getExtras();
         String value = bundle.getString("teste");
-        Toast.makeText(getApplicationContext(),value,Toast.LENGTH_SHORT).show();
-       // retornar();
+        Toast.makeText(getApplicationContext(),value,Toast.LENGTH_SHORT).show();*/
 
         baseLoaderCallback = new BaseLoaderCallback(this) {
             @Override
@@ -167,8 +170,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             if(!flag_ok_linhas){
                 for (nPontos=0;nPontos<coordLinhas.size();nPontos++) {
                     Imgproc.circle(img1, coordLinhas.get(nPontos), 1, new Scalar(255, 152, 22));
+                    /*para cada novo ponto, adiciona-lo ao pacote com a chave no formato: "PontoNx" e "PontoNy"*/
+                    b.putDouble("Ponto" + Integer.toString(nPontos+1) + "x",coordLinhas.get(nPontos).x);
+                    b.putDouble("Ponto" + Integer.toString(nPontos+1) + "y",coordLinhas.get(nPontos).y);
                 }
-                if (coordLinhas.size() % 2 == 0) {
+                if (coordLinhas.size() % 2 == 0) {/*desenhar a linha na tela a cada par de pontos*/
                     imprimirLinha(coordLinhas.get(nPontos - 1), coordLinhas.get(nPontos - 2), img1);
                 } else {
                     imprimirLinha(coordLinhas.get(nPontos - 1), finalLinha, img1);
@@ -176,10 +182,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
             else{
                 for(int k=0;k<coordLinhas.size();k=k+2){
-                   /* nRows = Math.abs((int)coordLinhas.get(k+1).y - (int)coordLinhas.get(k).y);*/
-                    /*Point points[] = new Point[nRows*3];*/
                     for(int i=(int)coordLinhas.get(k).y; i<(int)coordLinhas.get(k+1).y; i=i+20){
-                        //for(int j=0; j<nCols; j++){
                         for(int j=(int)coordLinhas.get(k).x; j<(int)coordLinhas.get(k).x+30; j=j+10){
                             Imgproc.circle(img1,new Point(j,i),2,new Scalar(255,255,255));
                             /*points[i*3+j]=new Point(j*colStep, i*rowStep);*/
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     }
                 }
             }
-
+            b.putInt("qtdLinhas",coordLinhas.size());/*adicionar a quantidade de linhas ao pacote*/
         }
         //Imgproc.putText(img1,coordTexto,new Point(100,100),Core.FONT_ITALIC,2.0,new Scalar(255,255,0));
 

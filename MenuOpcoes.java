@@ -30,6 +30,12 @@ public class MenuOpcoes extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_menu_opcoes);
+        Intent in = getIntent();
+        Bundle b = in.getBundleExtra("coordPontos");
+        int qtdLinhas = b.getInt("qtdLinhas");
+        double p1x = b.getDouble("Ponto1x");
+        double p1y = b.getDouble("Ponto1y");
+        Toast.makeText(getApplicationContext(), "nPontos=" + Integer.toString(qtdLinhas) + ", (" + Double.toString(p1x) + "," + Double.toString(p1y) + ")", Toast.LENGTH_SHORT).show();
         definirLinhas();//Observa o comportamento do botão
     }
 }
